@@ -8,7 +8,10 @@ Add as a flake input:
 
 ```nix
 {
-  inputs.harbor.url = "github:axioncs/harbor-flake";
+  inputs.harbor = {
+    url = "github:axioncs/harbor-flake";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
 }
 ```
 
