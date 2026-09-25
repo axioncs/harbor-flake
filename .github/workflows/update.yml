@@ -3,14 +3,12 @@ name: Check for Harbor updates
 
 on:
   schedule:
-    # Every 6 hours (upstream beta builds land roughly every few days)
     - cron: "0 */6 * * *"
   workflow_dispatch: {}
 
 permissions:
   contents: write
 
-# Never let two runs race on the same version.json.
 concurrency:
   group: harbor-update
   cancel-in-progress: false

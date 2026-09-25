@@ -18,13 +18,8 @@
         pkgs = import nixpkgs { inherit system; };
         inherit (pkgs) lib;
 
-        # Version, URL and hash for BOTH channels live in version.json so the
-        # update bot only ever touches one small file, never flake.nix.
         versions = builtins.fromJSON (builtins.readFile ./version.json);
 
-        # Libraries the binary links directly (verified with readelf -d):
-        # libmpv.so.2, libssl/libcrypto.so.3, libudev.so.1, gtk3/gdk/cairo/glib,
-        # libdbus-1.so.3, webkit2gtk-4.1, javascriptcoregtk-4.1, libsoup-3.0.
         buildLibs = with pkgs; [
           mpv-unwrapped
           openssl
@@ -39,8 +34,6 @@
           stdenv.cc.cc.lib # libgcc_s.so.1
         ];
 
-        # Loaded at runtime rather than linked: tray icon, GL/EGL for the
-        # libmpv render path and WebKit, Vulkan for mpv's gpu-next.
         runtimeLibs = with pkgs; [
           libayatana-appindicator
           libGL
@@ -80,10 +73,8 @@
 
             buildInputs = buildLibs ++ runtimeLibs ++ gstPlugins;
 
-            # dlopen'd libs must be on the ELF runpath too, not only LD_LIBRARY_PATH.
             runtimeDependencies = runtimeLibs;
 
-            # We wrap manually in postFixup so we control the exact env.
             dontWrapGApps = true;
 
             unpackPhase = ''
@@ -95,9 +86,6 @@
             installPhase = ''
               runHook preInstall
 
-              # The .deb ships exactly: usr/bin/harbor, fonts under
-              # "usr/lib/Harbor[ Beta]/" (note the SPACE in the beta path),
-              # a .desktop file, and icons. Copy verbatim and quote everything.
               mkdir -p "$out"
               cp -r usr/. "$out/"
 
@@ -107,7 +95,6 @@
             postFixup = ''
               wrapProgram "$out/bin/harbor" \
                 "''${gappsWrapperArgs[@]}" \
-                --set WEBKIT_DISABLE_COMPOSITING_MODE 1 \
                 --set GIO_MODULE_DIR "${pkgs.glib-networking}/lib/gio/modules" \
                 --prefix GST_PLUGIN_SYSTEM_PATH_1_0 : "${lib.makeSearchPath "lib/gstreamer-1.0" gstPlugins}" \
                 --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath (buildLibs ++ runtimeLibs)}" \
@@ -131,9 +118,6 @@
       in
       {
         packages = rec {
-          # Default follows the beta channel, matching the AUR's
-          # harbor-stremio-beta-bin. The stable .deb is much older
-          # (self-reports 0.9.87 vs 0.9.126) and lacks recent modules.
           default = beta;
 
           beta = mkHarbor {
