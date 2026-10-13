@@ -1,8 +1,8 @@
 {
   "beta": {
-    "version": "0.9.127-1",
-    "url": "https://github.com/harborstremio-linux/harbor-linux-builds/releases/download/beta-v0.9.127/Harbor_0.9.127-1_amd64.deb",
-    "hash": "sha256-gxoDITYH3Ti7/IbCu+rXgs5ygwJLEKVLXhVa1hC4lok="
+    "version": "0.9.132-1",
+    "url": "https://github.com/harborstremio-linux/harbor-linux-builds/releases/download/beta-v0.9.132/Harbor_0.9.132-1_amd64.deb",
+    "hash": "sha256-f7ZCIhYzBgOmP6QQ6kQ4QvUQDweLoqtdRHRuzve3fBQ="
   },
   "stable": {
     "version": "0.9.87",
